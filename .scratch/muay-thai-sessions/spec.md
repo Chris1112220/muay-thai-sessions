@@ -5,7 +5,7 @@ Status: needs-triage
 A free public website that builds a Muay Thai **session** from YouTube videos to fit the **time budget** a **viewer** picks. Terms follow `GLOSSARY.md`. Decisions are recorded in `docs/adr/0001`–`0004`.
 
 - **Name:** Chok Dee Muay Thai, shown as "Chok Dee Muay Thai" with "โชคดี มวยไทย" underneath
-- **Repo:** `luckyMuayThai`
+- **Repo:** `muay-thai-sessions`
 - **URL:** `luckymuaythai.vercel.app` (availability unchecked)
 - **Budget:** $0
 
@@ -93,5 +93,5 @@ The page is a single column that works on desktop and phone.
 
 - The maximum number of IDs per `videos.list` call. It's commonly 50, but no official source confirms it.
 - The Vercel Hobby plan's limits on scheduled jobs and the free key-value store.
-- Whether the `luckyMuayThai` GitHub repo name and the `luckymuaythai.vercel.app` address are available.
+- Whether the `luckymuaythai.vercel.app` address is available.
 - That the `watch_videos?video_ids=` link still works.
