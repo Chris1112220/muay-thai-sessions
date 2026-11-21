@@ -43,7 +43,7 @@ A free public website that builds a Muay Thai **session** from YouTube videos to
 - **Language.** Training and History searches prefer English. Fights has no language preference.
 - **Config file.** A config file in the repo lists **blocked channels** and **trusted channels**.
 - **Quota use.** About 9 `search.list` calls a day out of the 100 allowed, plus a few `videos.list` calls from the separate 10,000-unit budget.
-- **Storage.** Pools live in a free key-value store and are overwritten on each refresh, so no YouTube data is stored for more than 30 days.
+- **Storage.** Pools live in a free Upstash Redis database and are overwritten on each refresh, so no YouTube data is stored for more than 30 days. All pools are kept under one key, so a session request reads them with a single command (the free tier allows 500K commands a month).
 
 ## Session page
 
@@ -66,8 +66,8 @@ The page is a single column that works on desktop and phone.
 ## Stack
 
 - TypeScript + Next.js on Vercel's free Hobby plan.
-- A free key-value store for the pools, such as Upstash Redis.
-- A Vercel scheduled job for the daily refresh (ADR 0004).
+- Upstash Redis's free tier for the pools, through the Vercel Marketplace (Vercel KV no longer exists).
+- A Vercel Cron Job for the daily refresh (ADR 0004).
 
 ## Quality
 
@@ -100,7 +100,4 @@ The session builder (`src/session/buildSession.ts`) and pool selection (`src/poo
 
 ## Facts to verify before building
 
-- The maximum number of IDs per `videos.list` call. It's commonly 50, but no official source confirms it.
-- The Vercel Hobby plan's limits on scheduled jobs and the free key-value store.
-- Whether the `luckymuaythai.vercel.app` address is available.
-- That the `watch_videos?video_ids=` link still works.
+Checked on 2026-11-21; see ticket 01 and `research/01-verify-facts.md`. Only the address is still open (ticket 04).

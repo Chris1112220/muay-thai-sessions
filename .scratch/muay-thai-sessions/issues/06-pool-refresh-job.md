@@ -12,8 +12,8 @@ A Vercel scheduled job that runs once a day, rebuilds each category's pool from 
 
 - [ ] For each category, it runs `search.list` once per search phrase in the spec, ranked by relevance or view count, not date.
 - [ ] Training and History searches prefer English; Fights has no language preference.
-- [ ] It fetches details with `videos.list` in batches no bigger than the limit found in ticket 01, and turns each result into a `Candidate`.
-- [ ] It builds each pool with `selectPool` and the channel config from ticket 05, then overwrites that category's pool in the store.
+- [ ] It fetches details with `videos.list` in batches of at most 50 IDs, and turns each result into a `Candidate`. Google documents no maximum (ticket 01), so 50 is an assumption: a 400 response fails that category safely rather than crashing the job.
+- [ ] It builds each pool with `selectPool` and the channel config from ticket 05, then writes all pools to the store together under one key, so the session API can read them in one command.
 - [ ] It uses about 9 `search.list` calls a day in total.
 - [ ] If YouTube fails for a category, that category's old pool is left in place and the error is logged.
 - [ ] The YouTube calls and the store sit behind small interfaces, so the job is tested with fakes and no network.

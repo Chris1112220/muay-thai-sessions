@@ -34,3 +34,5 @@ Full findings, with a source for each claim: `../research/01-verify-facts.md` (c
 2. ADR 0004 and the spec name Upstash Redis "such as". It's now the only Marketplace option, and its 500K commands a month means each session request should read the pools in one command.
 3. Ticket 06's batch size should be 50, as an assumption, with a 400 handled.
 4. The spec's address is still unconfirmed (ticket 04).
+
+**2026-11-21, maintainer decision:** applied conflicts 1–3 to ADR 0004, the spec and tickets 06 and 07. v1 stays on Cron Jobs rather than the Schedules beta. Conflict 4 (the address) stays with ticket 04.
