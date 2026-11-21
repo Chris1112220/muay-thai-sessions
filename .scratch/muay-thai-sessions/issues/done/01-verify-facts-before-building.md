@@ -1,6 +1,7 @@
 # 01: Verify the facts the build depends on
 
-Status: ready-for-agent
+Status: done
+Closed: 2026-11-21
 Spec: `../spec.md`, "Facts to verify before building"
 
 ## What
@@ -36,3 +37,5 @@ Full findings, with a source for each claim: `../research/01-verify-facts.md` (c
 4. The spec's address is still unconfirmed (ticket 04).
 
 **2026-11-21, maintainer decision:** applied conflicts 1–3 to ADR 0004, the spec and tickets 06 and 07. v1 stays on Cron Jobs rather than the Schedules beta. Conflict 4 (the address) stays with ticket 04.
+
+**2026-11-21:** Findings recorded in research/01-verify-facts.md; applied to ADR 0004, spec, and tickets 06-07.

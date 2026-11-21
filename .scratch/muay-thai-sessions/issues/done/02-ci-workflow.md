@@ -1,6 +1,7 @@
 # 02: Run the tests on every push
 
-Status: ready-for-agent
+Status: done
+Closed: 2026-11-21
 Spec: `../spec.md`, "Quality"
 
 ## What
@@ -16,3 +17,5 @@ A GitHub Actions workflow that runs the unit tests and the typecheck on every pu
 ## Comments
 
 **2026-11-21:** Done in PR #2 (merged as 845e9b4). The "Test" workflow runs on every push and pull request, and the README shows its badge.
+
+**2026-11-21:** Done in PR #2 (merged as 845e9b4). Test workflow runs on every push/PR; README shows badge.

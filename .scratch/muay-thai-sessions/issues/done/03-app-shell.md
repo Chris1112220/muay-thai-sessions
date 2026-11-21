@@ -1,6 +1,7 @@
 # 03: Next.js app shell
 
-Status: ready-for-agent
+Status: done
+Closed: 2026-11-21
 Spec: `../spec.md`, intro, "Session page" (layout) and "Stack"
 
 ## What
@@ -17,3 +18,8 @@ Turn the repo into a TypeScript Next.js app that can run on Vercel's Hobby plan,
 ## Notes
 
 - Nothing here needs accounts or keys; linking Vercel is ticket 04.
+
+## Comments
+
+
+**2026-11-21:** Next.js 16 App Router shell: home page shows Chok Dee Muay Thai and Thai subtitle in a responsive single column. Added dev/build/start scripts; typecheck, Vitest, and next build pass.
