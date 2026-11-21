@@ -22,10 +22,6 @@ _Avoid_: Queue, backlog
 A person using the site. Viewers are anonymous and have no account.
 _Avoid_: User, member, account
 
-**Watched video**:
-A video a viewer has played for long enough that future sessions in their browser should skip it.
-_Avoid_: Seen video, viewed video, history
-
 ### Videos
 
 **Category**:

@@ -35,7 +35,7 @@ describe("buildSession", () => {
     const pools = { ...emptyPools(), Training: [video("a", "Training", 170)] };
 
     const session = buildSession(
-      { categories: ["Training"], budgetMinutes: 3, includeShorts: false, watched: [] },
+      { categories: ["Training"], budgetMinutes: 3, includeShorts: false },
       pools,
       Math.random,
     );
@@ -48,7 +48,7 @@ describe("buildSession", () => {
 
     for (const seed of SEEDS) {
       const session = buildSession(
-        { categories: ["Training"], budgetMinutes: 10, includeShorts: false, watched: [] },
+        { categories: ["Training"], budgetMinutes: 10, includeShorts: false },
         pools,
         seeded(seed),
       );
@@ -61,7 +61,7 @@ describe("buildSession", () => {
 
     for (const seed of SEEDS) {
       const session = buildSession(
-        { categories: ["Training"], budgetMinutes: 10, includeShorts: false, watched: [] },
+        { categories: ["Training"], budgetMinutes: 10, includeShorts: false },
         pools,
         seeded(seed),
       );
@@ -73,7 +73,7 @@ describe("buildSession", () => {
     const pools = { ...emptyPools(), Fights: [video("full-fight", "Fights", 560)] };
 
     const session = buildSession(
-      { categories: ["Fights"], budgetMinutes: 10, includeShorts: false, watched: [] },
+      { categories: ["Fights"], budgetMinutes: 10, includeShorts: false },
       pools,
       seeded(1),
     );
@@ -86,7 +86,7 @@ describe("buildSession", () => {
 
     for (const seed of SEEDS) {
       const session = buildSession(
-        { categories: ["Training", "Training"], budgetMinutes: 10, includeShorts: false, watched: [] },
+        { categories: ["Training", "Training"], budgetMinutes: 10, includeShorts: false },
         pools,
         seeded(seed),
       );
@@ -100,7 +100,7 @@ describe("buildSession", () => {
     const pools = { ...emptyPools(), Training: pool("Training", 50, [150]) };
 
     expect(() =>
-      buildSession({ categories: ["Training"], budgetMinutes, includeShorts: false, watched: [] }, pools, seeded(1)),
+      buildSession({ categories: ["Training"], budgetMinutes, includeShorts: false }, pools, seeded(1)),
     ).toThrow("Pick a time budget of 1 to 120 whole minutes.");
   });
 
@@ -108,7 +108,7 @@ describe("buildSession", () => {
     const pools = { ...emptyPools(), Training: pool("Training", 150, [60]) };
 
     const session = buildSession(
-      { categories: ["Training"], budgetMinutes, includeShorts: false, watched: [] },
+      { categories: ["Training"], budgetMinutes, includeShorts: false },
       pools,
       seeded(1),
     );
@@ -119,7 +119,7 @@ describe("buildSession", () => {
   it("refuses to build a session with no category ticked", () => {
     expect(() =>
       buildSession(
-        { categories: [], budgetMinutes: 10, includeShorts: false, watched: [] },
+        { categories: [], budgetMinutes: 10, includeShorts: false },
         emptyPools(),
         seeded(1),
       ),
@@ -136,7 +136,7 @@ describe("buildSession", () => {
 
     for (const seed of SEEDS) {
       const session = buildSession(
-        { categories: ["Training", "History"], budgetMinutes: 30, includeShorts: false, watched: [] },
+        { categories: ["Training", "History"], budgetMinutes: 30, includeShorts: false },
         pools,
         seeded(seed),
       );
@@ -158,7 +158,7 @@ describe("buildSession", () => {
 
     for (const seed of SEEDS) {
       const session = buildSession(
-        { categories: ["Training", "Fights", "History"], budgetMinutes: 30, includeShorts: false, watched: [] },
+        { categories: ["Training", "Fights", "History"], budgetMinutes: 30, includeShorts: false },
         pools,
         seeded(seed),
       );
@@ -180,7 +180,7 @@ describe("buildSession", () => {
 
     for (const seed of SEEDS) {
       const session = buildSession(
-        { categories: ["Training", "History"], budgetMinutes: 10, includeShorts: false, watched: [] },
+        { categories: ["Training", "History"], budgetMinutes: 10, includeShorts: false },
         pools,
         seeded(seed),
       );
@@ -204,7 +204,7 @@ describe("buildSession", () => {
 
     for (const seed of SEEDS) {
       const session = buildSession(
-        { categories: ["Training", "Fights", "History"], budgetMinutes: 21, includeShorts: false, watched: [] },
+        { categories: ["Training", "Fights", "History"], budgetMinutes: 21, includeShorts: false },
         pools,
         seeded(seed),
       );
@@ -219,66 +219,6 @@ describe("buildSession", () => {
     expect([...openers].sort()).toEqual(["Fights", "History", "Training"]);
   });
 
-  it("leaves out the viewer's watched videos", () => {
-    const training = pool("Training", 50, [150]);
-    const pools = { ...emptyPools(), Training: training };
-    const watched = training.slice(0, 40).map((v) => v.id);
-
-    for (const seed of SEEDS) {
-      const session = buildSession(
-        { categories: ["Training"], budgetMinutes: 10, includeShorts: false, watched },
-        pools,
-        seeded(seed),
-      );
-      expect(session.videos).toHaveLength(4);
-      for (const v of session.videos) expect(watched, `seed ${seed}`).not.toContain(v.id);
-    }
-  });
-
-  it("resets a category's watched list when too few unwatched videos are left to fill its share", () => {
-    const training = pool("Training", 50, [150]);
-    const history = pool("History", 50, [150]);
-    const pools = { ...emptyPools(), Training: training, History: history };
-    // Only 2 unwatched Training videos (300s) remain for a 600s share; History has plenty.
-    const watched = [...training.slice(0, 48), ...history.slice(0, 10)].map((v) => v.id);
-
-    for (const seed of SEEDS) {
-      const session = buildSession(
-        { categories: ["Training", "History"], budgetMinutes: 20, includeShorts: false, watched },
-        pools,
-        seeded(seed),
-      );
-      const trainingVideos = session.videos.filter((v) => v.category === "Training");
-      const historyVideos = session.videos.filter((v) => v.category === "History");
-
-      expect(session.resetCategories).toEqual(["Training"]);
-      expect(totalSeconds(trainingVideos)).toBe(600);
-      expect(totalSeconds(historyVideos)).toBe(600);
-      for (const v of historyVideos) expect(watched, `seed ${seed}`).not.toContain(v.id);
-    }
-  });
-
-  it("resets a category's watched list when it takes a thin category's spare time and runs short", () => {
-    const training = pool("Training", 50, [150]);
-    const pools = {
-      ...emptyPools(),
-      Training: training,
-      History: pool("History", 2, [150]), // only 300s for a 600s share, so Training's share grows to 900s
-    };
-    // 4 unwatched Training videos (600s) cover the even share but not the grown one.
-    const watched = training.slice(0, 46).map((v) => v.id);
-
-    for (const seed of SEEDS) {
-      const session = buildSession(
-        { categories: ["Training", "History"], budgetMinutes: 20, includeShorts: false, watched },
-        pools,
-        seeded(seed),
-      );
-      expect(session.resetCategories).toEqual(["Training"]);
-      expect(totalSeconds(session.videos.filter((v) => v.category === "Training")), `seed ${seed}`).toBe(900);
-    }
-  });
-
   it("gives a thin category's unfilled time to the other ticked categories", () => {
     const pools = {
       ...emptyPools(),
@@ -288,24 +228,13 @@ describe("buildSession", () => {
 
     for (const seed of SEEDS) {
       const session = buildSession(
-        { categories: ["Training", "History"], budgetMinutes: 20, includeShorts: false, watched: [] },
+        { categories: ["Training", "History"], budgetMinutes: 20, includeShorts: false },
         pools,
         seeded(seed),
       );
       expect(totalSeconds(session.videos.filter((v) => v.category === "History"))).toBe(300);
       expect(totalSeconds(session.videos.filter((v) => v.category === "Training"))).toBe(900);
     }
-  });
-
-  it("doesn't report a reset for a thin category with nothing watched", () => {
-    const pools = { ...emptyPools(), History: pool("History", 2, [150]) };
-
-    const session = buildSession(
-      { categories: ["History"], budgetMinutes: 10, includeShorts: false, watched: [] },
-      pools,
-      seeded(1),
-    );
-    expect(session.resetCategories).toEqual([]);
   });
 
   it("returns the best it can and flags it when a lone ticked category can't reach 85%", () => {
@@ -315,7 +244,6 @@ describe("buildSession", () => {
       categories: ["Training" as const],
       budgetMinutes: 10,
       includeShorts: false,
-      watched: [],
     };
 
     const short = buildSession(request, thin, seeded(1));
@@ -329,7 +257,7 @@ describe("buildSession", () => {
   it("leaves out Shorts unless Include Shorts is ticked", () => {
     // 45s videos are Shorts (under one minute); 60s is the shortest non-Short.
     const pools = { ...emptyPools(), Training: [...pool("Training", 10, [45]), video("full", "Training", 60)] };
-    const request = { categories: ["Training" as const], budgetMinutes: 3, watched: [] };
+    const request = { categories: ["Training" as const], budgetMinutes: 3 };
 
     for (const seed of SEEDS) {
       const without = buildSession({ ...request, includeShorts: false }, pools, seeded(seed));

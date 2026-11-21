@@ -22,10 +22,10 @@ A free public website that builds a Muay Thai **session** from YouTube videos to
 - **At least ~85% filled.** If a random attempt falls short, reshuffle and retry a few times, then use the closest result that doesn't go over.
 - **Any video that fits.** There's no cap on a single video's length: any video that fits the time left can go in, so full fights are included. How many videos a session holds follows from the time budget alone.
 - **Even split.** The time budget is split evenly across the ticked categories.
-- **Random picks.** Videos are chosen at random from each category's **pool**, leaving out the viewer's **watched videos**.
+- **Random picks.** Videos are chosen at random from each category's **pool**.
+- **Nothing remembered.** The site doesn't track or save what a viewer has watched, in the browser or on the server, so any video in a pool can come up again. Nothing about the viewer is stored on the server.
 - **Ordering.** Truly random across categories, not only within them, but no two videos in a row from the same category where avoidable. Repeats are allowed at the end only when one category has more videos left than the others.
 - **Thin category.** If a category can't fill its share, its unfilled time goes to the other ticked categories. If only one category is ticked, return the best session under the 85% target and tell the viewer.
-- **Pool reset.** When a category lacks enough unwatched videos to fill its share, that category's watched list is cleared and the full pool is used. This applies to a category's even share and to any spare time it takes from a thin category, so that time isn't lost.
 - **Shorts.** They're excluded unless Include Shorts is ticked.
 
 ## Pools
@@ -44,12 +44,6 @@ A free public website that builds a Muay Thai **session** from YouTube videos to
 - **Config file.** A config file in the repo lists **blocked channels** and **trusted channels**.
 - **Quota use.** About 9 `search.list` calls a day out of the 100 allowed, plus a few `videos.list` calls from the separate 10,000-unit budget.
 - **Storage.** Pools live in a free key-value store and are overwritten on each refresh, so no YouTube data is stored for more than 30 days.
-
-## Watched videos
-
-- **Recording.** A video counts as watched after 30 seconds of playback, detected through the YouTube IFrame Player API. Its ID is added to a list in `localStorage`.
-- **Using the list.** The list is sent with each session request, and the server excludes those IDs.
-- **No server storage.** Nothing about the viewer is stored on the server (ADR 0003).
 
 ## Session page
 
@@ -81,7 +75,6 @@ The page is a single column that works on desktop and phone.
   - the time-filling rules
   - the even split
   - the ordering rule
-  - the watched-video exclusion and pool reset
 - A GitHub Actions workflow runs the tests on every push, and the README shows its status badge.
 
 ## Tickets
@@ -97,13 +90,13 @@ The session builder (`src/session/buildSession.ts`) and pool selection (`src/poo
 - `07-session-api.md`
 - `08-session-form.md`
 - `09-session-player.md`
-- `10-watched-videos.md`
+- `10-watched-videos.md` (wontfix: watched videos aren't tracked)
 - `11-youtube-compliance.md`
 
 ## Out of scope for v1
 
 - **"Save to my YouTube" (v2).** Google OAuth with the `youtube.force-ssl` scope. It would start unverified at $0, with a warning screen and a 100-user lifetime cap. Verification would need a domain (about $10–20 a year).
-- Any-topic search, viewer accounts, and syncing watched videos across devices.
+- Any-topic search, viewer accounts, and remembering what a viewer has watched.
 
 ## Facts to verify before building
 

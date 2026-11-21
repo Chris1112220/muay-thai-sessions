@@ -1,7 +1,6 @@
 # 10: Record watched videos in the browser
 
-Status: ready-for-agent
-Blocked by: 09
+Status: wontfix
 Spec: `../spec.md`, "Watched videos"; ADR 0003
 
 ## What
@@ -19,3 +18,7 @@ Remember which videos the viewer has watched, in their browser only, and send th
 ## Notes
 
 - The spec doesn't say how the browser knows which IDs belong to a reset category. The session's videos carry their category, but older watched IDs don't. The maintainer should decide whether to store the category with each ID.
+
+## Comments
+
+**2026-11-21, maintainer decision:** dropped. Sessions are plain random picks from each pool, and nothing about what a viewer has watched is saved, in the browser or on the server. The watched-video exclusion and reset code was removed from `buildSession`.

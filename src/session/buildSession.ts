@@ -4,13 +4,10 @@ export interface SessionRequest {
   categories: Category[];
   budgetMinutes: number;
   includeShorts: boolean;
-  watched: string[];
 }
 
 export interface Session {
   videos: Video[];
-  /** Categories whose watched list was cleared because too few unwatched videos were left. */
-  resetCategories: Category[];
   /** True when the session fills less than 85% of the time budget, so the viewer should be told. */
   underTarget: boolean;
 }
@@ -32,54 +29,29 @@ export function buildSession(request: SessionRequest, pools: Pools, random: Rand
 
   const budgetSeconds = budgetMinutes * 60;
   const shareSeconds = budgetSeconds / categories.length;
-  const watched = new Set(request.watched);
-  const choices = categories.map((category) => {
-    const eligible = pools[category].filter((v) => request.includeShorts || !isShort(v));
-    return { eligible, unwatched: eligible.filter((v) => !watched.has(v.id)) };
-  });
+  const eligible = categories.map((category) =>
+    pools[category].filter((v) => request.includeShorts || !isShort(v)),
+  );
 
   // Pass 1: fill each category's even share.
-  const fills = choices.map((c) => fillCategory(c, shareSeconds, random));
+  const fills = eligible.map((candidates) => fillShare(candidates, shareSeconds, random));
 
   // Pass 2: categories that still fall short are thin; their unfilled time goes to the others.
-  const isThin = fills.map((f) => total(f.videos) < FILL_TARGET * shareSeconds);
+  const isThin = fills.map((videos) => total(videos) < FILL_TARGET * shareSeconds);
   const fullCount = isThin.filter((thin) => !thin).length;
   const spareSeconds = fills.reduce(
-    (sum, f, i) => (isThin[i] ? sum + shareSeconds - total(f.videos) : sum),
+    (sum, videos, i) => (isThin[i] ? sum + shareSeconds - total(videos) : sum),
     0,
   );
   const finalFills =
     spareSeconds > 0 && fullCount > 0
-      ? fills.map((f, i) =>
-          isThin[i] ? f : fillCategory(choices[i]!, shareSeconds + spareSeconds / fullCount, random),
+      ? fills.map((videos, i) =>
+          isThin[i] ? videos : fillShare(eligible[i]!, shareSeconds + spareSeconds / fullCount, random),
         )
       : fills;
 
-  const videos = interleave(
-    finalFills.map((f) => f.videos),
-    random,
-  );
-  return {
-    videos,
-    resetCategories: categories.filter((_, i) => finalFills[i]!.reset),
-    underTarget: total(videos) < FILL_TARGET * budgetSeconds,
-  };
-}
-
-/**
- * Fills one category's share from its unwatched videos. If they can't fill it and some videos were
- * left out as watched, the category's watched list is reset and the share is filled from all of them.
- */
-function fillCategory(
-  choice: { eligible: Video[]; unwatched: Video[] },
-  shareSeconds: number,
-  random: Random,
-): { videos: Video[]; reset: boolean } {
-  const fromUnwatched = fillShare(choice.unwatched, shareSeconds, random);
-  if (total(fromUnwatched) >= FILL_TARGET * shareSeconds || choice.unwatched.length === choice.eligible.length) {
-    return { videos: fromUnwatched, reset: false };
-  }
-  return { videos: fillShare(choice.eligible, shareSeconds, random), reset: true };
+  const videos = interleave(finalFills, random);
+  return { videos, underTarget: total(videos) < FILL_TARGET * budgetSeconds };
 }
 
 /**
