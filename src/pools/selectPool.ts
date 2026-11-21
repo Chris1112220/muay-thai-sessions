@@ -26,13 +26,16 @@ export function selectPool(category: Category, candidates: Candidate[], channels
   const blocked = new Set(channels.blocked);
   const trusted = new Set(channels.trusted);
   const seen = new Set<string>();
-  const eligible = candidates.filter((c) => {
-    if (seen.has(c.id)) return false;
-    seen.add(c.id);
-    return isEligible(c) && !blocked.has(c.channelId);
-  });
+  const eligible = candidates
+    .filter((c) => {
+      if (seen.has(c.id)) return false;
+      seen.add(c.id);
+      return isEligible(c) && !blocked.has(c.channelId);
+    })
+    // All search phrases' results are ranked together by all-time views, so no one phrase fills the pool.
+    .sort((a, b) => b.viewCount - a.viewCount);
 
-  // Trusted channels' videos always get a place; the best-ranked others fill the rest.
+  // Trusted channels' videos always get a place; the most-viewed others fill the rest.
   const trustedCount = eligible.filter((c) => trusted.has(c.channelId)).length;
   let otherPlaces = Math.max(0, POOL_SIZE - trustedCount);
   const kept = eligible.filter((c) => trusted.has(c.channelId) || otherPlaces-- > 0);

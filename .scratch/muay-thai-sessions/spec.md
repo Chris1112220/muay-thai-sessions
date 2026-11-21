@@ -11,8 +11,8 @@ A free public website that builds a Muay Thai **session** from YouTube videos to
 
 ## Viewer flow
 
-1. The viewer ticks one or more **categories**: Training, Fights, History.
-2. The viewer picks a **time budget** from the presets: 3, 5, 10, 15, 30, 45 or 60 minutes.
+1. The viewer ticks one or more **categories**: Training, Fights, History. With none ticked, the site doesn't build a session and asks the viewer to pick at least one category. A category ticked twice counts once.
+2. The viewer sets a **time budget** of 1 to 120 whole minutes, typed in or chosen with a slider. The page keeps the input in that range, and the server refuses any budget outside it.
 3. Optionally, the viewer ticks **Include Shorts**. It's off by default.
 4. The site builds a session and starts playing it.
 
@@ -20,12 +20,12 @@ A free public website that builds a Muay Thai **session** from YouTube videos to
 
 - **Never over budget.** The total length is at most the time budget.
 - **At least ~85% filled.** If a random attempt falls short, reshuffle and retry a few times, then use the closest result that doesn't go over.
-- **Several videos.** Sessions of 5 minutes or more always have several short videos; for example, a 10-minute session has about 4–5. A single video is allowed only when the budget is under 5 minutes, i.e. the 3-minute preset.
+- **Any video that fits.** There's no cap on a single video's length: any video that fits the time left can go in, so full fights are included. How many videos a session holds follows from the time budget alone.
 - **Even split.** The time budget is split evenly across the ticked categories.
 - **Random picks.** Videos are chosen at random from each category's **pool**, leaving out the viewer's **watched videos**.
-- **Ordering.** Random, but no two videos in a row from the same category where avoidable. Repeats are allowed at the end only when one category has more videos left than the others.
+- **Ordering.** Truly random across categories, not only within them, but no two videos in a row from the same category where avoidable. Repeats are allowed at the end only when one category has more videos left than the others.
 - **Thin category.** If a category can't fill its share, its unfilled time goes to the other ticked categories. If only one category is ticked, return the best session under the 85% target and tell the viewer.
-- **Pool reset.** When a category lacks enough unwatched videos to fill its share, that category's watched list is cleared and the full pool is used.
+- **Pool reset.** When a category lacks enough unwatched videos to fill its share, that category's watched list is cleared and the full pool is used. This applies to a category's even share and to any spare time it takes from a thin category, so that time isn't lost.
 - **Shorts.** They're excluded unless Include Shorts is ticked.
 
 ## Pools
@@ -34,7 +34,7 @@ A free public website that builds a Muay Thai **session** from YouTube videos to
   - Training: "muay thai technique", "muay thai drills", "muay thai beginner training"
   - Fights: "muay thai full fight", "Lumpinee fight", "Rajadamnern fight"
   - History: "muay thai history documentary", "muay boran", "legendary muay thai fighters"
-- **Ranking.** Search results are ranked by relevance or all-time views, not recency, so classic older videos stay in.
+- **Ranking.** All of a category's search phrases' results are mixed and ranked together by all-time views, not recency, so classic older videos stay in and the first phrase doesn't fill the pool.
 - **Eligibility.** A video joins a pool only if all of these hold:
   - embedding is allowed
   - it isn't age-restricted
@@ -56,7 +56,7 @@ A free public website that builds a Muay Thai **session** from YouTube videos to
 The page is a single column that works on desktop and phone.
 
 - One embedded YouTube player that auto-advances through the session.
-- An **up next** list showing each video's title and length.
+- An **up next** list showing every video still to play, in order, with each video's title and length, not just the next one.
 - A **Skip** button.
 - A counter, e.g. "12:30 of 30:00 watched".
 - A "Watch on YouTube" link built with `https://www.youtube.com/watch_videos?video_ids=<id>,<id>,…`. It's unofficial and best-effort (ADR 0002).

@@ -29,30 +29,27 @@ export type Random = () => number;
 
 const FILL_TARGET = 0.85;
 const MAX_ATTEMPTS = 10;
-/** From this budget up, no video may exceed a third of the budget, so sessions hold several videos. */
-const SEVERAL_VIDEOS_FROM_MINUTES = 5;
+const MIN_BUDGET_MINUTES = 1;
+const MAX_BUDGET_MINUTES = 120;
 
 export function buildSession(request: SessionRequest, pools: Pools, random: Random): Session {
-  const budgetSeconds = request.budgetMinutes * 60;
-  const maxVideoSeconds =
-    request.budgetMinutes >= SEVERAL_VIDEOS_FROM_MINUTES ? budgetSeconds / 3 : budgetSeconds;
-  const shareSeconds = budgetSeconds / request.categories.length;
-  const watched = new Set(request.watched);
-  const resetCategories: Category[] = [];
+  const categories = [...new Set(request.categories)];
+  if (categories.length === 0) throw new Error("Pick at least one category.");
+  const { budgetMinutes } = request;
+  if (!Number.isInteger(budgetMinutes) || budgetMinutes < MIN_BUDGET_MINUTES || budgetMinutes > MAX_BUDGET_MINUTES) {
+    throw new Error(`Pick a time budget of ${MIN_BUDGET_MINUTES} to ${MAX_BUDGET_MINUTES} whole minutes.`);
+  }
 
-  // Pass 1: fill each category's even share, resetting its watched list if it runs short.
-  const fills = request.categories.map((category) => {
-    const eligible = pools[category].filter(
-      (v) => v.durationSeconds <= maxVideoSeconds && (request.includeShorts || !isShort(v)),
-    );
-    const unwatched = eligible.filter((v) => !watched.has(v.id));
-    const fromUnwatched = fillShare(unwatched, shareSeconds, random);
-    if (total(fromUnwatched) >= FILL_TARGET * shareSeconds || unwatched.length === eligible.length) {
-      return { candidates: unwatched, videos: fromUnwatched };
-    }
-    resetCategories.push(category);
-    return { candidates: eligible, videos: fillShare(eligible, shareSeconds, random) };
+  const budgetSeconds = budgetMinutes * 60;
+  const shareSeconds = budgetSeconds / categories.length;
+  const watched = new Set(request.watched);
+  const choices = categories.map((category) => {
+    const eligible = pools[category].filter((v) => request.includeShorts || !isShort(v));
+    return { eligible, unwatched: eligible.filter((v) => !watched.has(v.id)) };
   });
+
+  // Pass 1: fill each category's even share.
+  const fills = choices.map((c) => fillCategory(c, shareSeconds, random));
 
   // Pass 2: categories that still fall short are thin; their unfilled time goes to the others.
   const isThin = fills.map((f) => total(f.videos) < FILL_TARGET * shareSeconds);
@@ -61,35 +58,75 @@ export function buildSession(request: SessionRequest, pools: Pools, random: Rand
     (sum, f, i) => (isThin[i] ? sum + shareSeconds - total(f.videos) : sum),
     0,
   );
-  const picks =
+  const finalFills =
     spareSeconds > 0 && fullCount > 0
       ? fills.map((f, i) =>
-          isThin[i] ? f.videos : fillShare(f.candidates, shareSeconds + spareSeconds / fullCount, random),
+          isThin[i] ? f : fillCategory(choices[i]!, shareSeconds + spareSeconds / fullCount, random),
         )
-      : fills.map((f) => f.videos);
+      : fills;
 
-  const videos = interleave(picks, random);
-  return { videos, resetCategories, underTarget: total(videos) < FILL_TARGET * budgetSeconds };
+  const videos = interleave(
+    finalFills.map((f) => f.videos),
+    random,
+  );
+  return {
+    videos,
+    resetCategories: categories.filter((_, i) => finalFills[i]!.reset),
+    underTarget: total(videos) < FILL_TARGET * budgetSeconds,
+  };
 }
 
 /**
- * Orders the picks so no two neighbours share a category where avoidable: each step takes from the
- * category with the most videos left (ties broken at random), skipping the one just played unless
- * it's the only one left, so any unavoidable repeats fall at the end.
+ * Fills one category's share from its unwatched videos. If they can't fill it and some videos were
+ * left out as watched, the category's watched list is reset and the share is filled from all of them.
+ */
+function fillCategory(
+  choice: { eligible: Video[]; unwatched: Video[] },
+  shareSeconds: number,
+  random: Random,
+): { videos: Video[]; reset: boolean } {
+  const fromUnwatched = fillShare(choice.unwatched, shareSeconds, random);
+  if (total(fromUnwatched) >= FILL_TARGET * shareSeconds || choice.unwatched.length === choice.eligible.length) {
+    return { videos: fromUnwatched, reset: false };
+  }
+  return { videos: fillShare(choice.eligible, shareSeconds, random), reset: true };
+}
+
+/**
+ * Orders the picks at random so no two neighbours share a category where avoidable. Each step picks
+ * at random among the categories that still leave a repeat-free order for the rest. When no such
+ * order exists, it takes from the category with the most videos left, so the unavoidable repeats
+ * fall at the end.
  */
 function interleave(groups: Video[][], random: Random): Video[] {
   const remaining = groups.map((g) => [...g]);
   const out: Video[] = [];
   let last = -1;
   while (remaining.some((g) => g.length > 0)) {
-    const open = remaining.map((_, i) => i).filter((i) => remaining[i]!.length > 0);
+    const counts = remaining.map((g) => g.length);
+    const open = counts.map((_, i) => i).filter((i) => counts[i]! > 0);
     const allowed = open.length > 1 ? open.filter((i) => i !== last) : open;
-    const most = Math.max(...allowed.map((i) => remaining[i]!.length));
-    const tied = shuffle(allowed.filter((i) => remaining[i]!.length === most), random);
-    last = tied[0]!;
+    const safe = allowed.filter((i) => leavesRepeatFreeOrder(counts, i));
+    if (safe.length > 0) {
+      last = shuffle(safe, random)[0]!;
+    } else {
+      const most = Math.max(...allowed.map((i) => counts[i]!));
+      last = shuffle(allowed.filter((i) => counts[i] === most), random)[0]!;
+    }
     out.push(remaining[last]!.shift()!);
   }
   return out;
+}
+
+/**
+ * Whether, after playing one video from category `next`, the rest can still be ordered with no two
+ * neighbours from the same category. The rest mustn't start with `next`, so each of its videos needs
+ * a different-category video before it; any other category needs one between each pair.
+ */
+function leavesRepeatFreeOrder(counts: number[], next: number): boolean {
+  const after = counts.map((n, i) => (i === next ? n - 1 : n));
+  const left = after.reduce((sum, n) => sum + n, 0);
+  return after.every((n, i) => (i === next ? n <= left - n : n <= left - n + 1));
 }
 
 /** Best of a few random greedy fills: stops early once the fill target is met. */
