@@ -8,6 +8,7 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@ai-hero/sandcastle": "^0.14.0",
     "typescript": "^7.0.2",
     "vitest": "^5.1.1"
   }
