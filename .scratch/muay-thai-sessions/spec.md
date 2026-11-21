@@ -84,6 +84,22 @@ The page is a single column that works on desktop and phone.
   - the watched-video exclusion and pool reset
 - A GitHub Actions workflow runs the tests on every push, and the README shows its status badge.
 
+## Tickets
+
+The session builder (`src/session/buildSession.ts`) and pool selection (`src/pools/selectPool.ts`) are already built and tested. The rest is split into one ticket per file under `issues/`:
+
+- `01-verify-facts-before-building.md`
+- `02-ci-workflow.md`
+- `03-app-shell.md`
+- `04-provision-accounts-and-keys.md` (human)
+- `05-channel-config-file.md`
+- `06-pool-refresh-job.md`
+- `07-session-api.md`
+- `08-session-form.md`
+- `09-session-player.md`
+- `10-watched-videos.md`
+- `11-youtube-compliance.md`
+
 ## Out of scope for v1
 
 - **"Save to my YouTube" (v2).** Google OAuth with the `youtube.force-ssl` scope. It would start unverified at $0, with a warning screen and a 100-user lifetime cap. Verification would need a domain (about $10–20 a year).
