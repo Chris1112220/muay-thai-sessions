@@ -1,14 +1,4 @@
-export type Category = "Training" | "Fights" | "History";
-
-export interface Video {
-  id: string;
-  title: string;
-  channel: string;
-  category: Category;
-  durationSeconds: number;
-}
-
-export type Pools = Record<Category, Video[]>;
+import type { Category, Pools, Video } from "../videos";
 
 export interface SessionRequest {
   categories: Category[];

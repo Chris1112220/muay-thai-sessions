@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { buildSession, type Pools, type Video } from "./buildSession";
+import type { Pools, Video } from "../videos";
+import { buildSession } from "./buildSession";
 
 const video = (id: string, category: Video["category"], seconds: number): Video => ({
   id,

@@ -1,4 +1,4 @@
-import type { Category, Video } from "../session/buildSession";
+import type { Category, Video } from "../videos";
 
 /** A search result merged with its `videos.list` details. */
 export interface Candidate {
