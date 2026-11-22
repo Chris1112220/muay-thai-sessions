@@ -6,9 +6,10 @@ import {
   WATCH_ON_YOUTUBE_LINK_LABEL,
   buildWatchOnYoutubeUrl,
   completedWatchSeconds,
-  formatDurationClock,
+  nowPlayingLabel,
   sessionTotalSeconds,
   upNextVideos,
+  upNextItemLabel,
   watchedCounterLabel,
 } from "../src/session/sessionPlayer";
 import { loadYoutubeApi, type YouTubePlayer } from "./youtubeIframeApi";
@@ -169,19 +170,14 @@ export function SessionPlayer({ videos }: SessionPlayerProps) {
 
       {currentVideo ? (
         <p className="session-player-now-playing">
-          Now playing: {currentVideo.title} ({formatDurationClock(currentVideo.length)})
+          Now playing: {nowPlayingLabel(currentVideo)}
         </p>
       ) : null}
 
       <h3 className="session-player-up-next-heading">Up next</h3>
       <ol className="session-player-up-next">
         {remaining.map((video) => (
-          <li key={video.id}>
-            <span className="session-player-up-next-title">{video.title}</span>
-            <span className="session-player-up-next-length">
-              {formatDurationClock(video.length)}
-            </span>
-          </li>
+          <li key={video.id}>{upNextItemLabel(video)}</li>
         ))}
       </ol>
     </section>

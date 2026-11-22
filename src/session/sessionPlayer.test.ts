@@ -4,8 +4,10 @@ import {
   buildWatchOnYoutubeUrl,
   completedWatchSeconds,
   formatDurationClock,
+  nowPlayingLabel,
   sessionTotalSeconds,
   upNextVideos,
+  upNextItemLabel,
   watchedCounterLabel,
 } from "./sessionPlayer";
 
@@ -70,6 +72,22 @@ describe("upNextVideos", () => {
     ]);
     expect(upNextVideos(videos, 1).map((v) => v.title)).toEqual(["Third"]);
     expect(upNextVideos(videos, 2)).toEqual([]);
+  });
+});
+
+describe("nowPlayingLabel", () => {
+  it("includes title, duration, and channel name", () => {
+    expect(nowPlayingLabel(video("a", 750, "Roundwork drills"))).toBe(
+      "Roundwork drills (12:30) — Channel",
+    );
+  });
+});
+
+describe("upNextItemLabel", () => {
+  it("includes title, channel name, and duration", () => {
+    expect(upNextItemLabel(video("b", 90, "Clinch basics"))).toBe(
+      "Clinch basics — Channel (1:30)",
+    );
   });
 });
 
