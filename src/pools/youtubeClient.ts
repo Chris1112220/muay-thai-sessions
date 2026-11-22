@@ -1,8 +1,15 @@
 import type { Candidate } from "./selectPool";
-import type { YouTubeClient } from "./poolRefresh";
 import { candidateFromVideosListItem } from "./youtubeParse";
 
 const YOUTUBE_API = "https://www.googleapis.com/youtube/v3";
+
+export interface YouTubeClient {
+  searchList(
+    query: string,
+    options: { relevanceLanguage?: string; order: "viewCount" | "relevance" },
+  ): Promise<string[]>;
+  videosList(ids: string[]): Promise<Candidate[]>;
+}
 
 interface GoogleError {
   error?: { message?: string; code?: number };

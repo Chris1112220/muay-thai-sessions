@@ -43,7 +43,9 @@ export function candidateFromVideosListItem(item: unknown): Candidate | null {
   const status = record.status as Record<string, unknown> | undefined;
   const contentDetails = record.contentDetails as Record<string, unknown> | undefined;
   const statistics = record.statistics as Record<string, unknown> | undefined;
-  const liveStreamingDetails = record.liveStreamingDetails as Record<string, unknown> | undefined;
+  const liveStreamingDetails = record.liveStreamingDetails as
+    | { actualStartTime?: string; actualEndTime?: string; scheduledStartTime?: string }
+    | undefined;
 
   const title = typeof snippet?.title === "string" ? snippet.title : "";
   const channel = typeof snippet?.channelTitle === "string" ? snippet.channelTitle : "";
@@ -54,8 +56,12 @@ export function candidateFromVideosListItem(item: unknown): Candidate | null {
   const ageRestricted = contentRating?.ytRating === "ytAgeRestricted";
 
   const viewCountRaw = statistics?.viewCount;
-  const viewCount =
-    typeof viewCountRaw === "string" ? Number.parseInt(viewCountRaw, 10) : typeof viewCountRaw === "number" ? viewCountRaw : 0;
+  let viewCount = 0;
+  if (typeof viewCountRaw === "string") {
+    viewCount = Number.parseInt(viewCountRaw, 10);
+  } else if (typeof viewCountRaw === "number") {
+    viewCount = viewCountRaw;
+  }
 
   const embeddable = status?.embeddable !== false;
 
@@ -67,7 +73,7 @@ export function candidateFromVideosListItem(item: unknown): Candidate | null {
     durationSeconds: parseIso8601Duration(durationRaw),
     embeddable,
     ageRestricted,
-    liveStatus: liveStatusFromStreaming(liveStreamingDetails as Record<string, string> | undefined),
+    liveStatus: liveStatusFromStreaming(liveStreamingDetails),
     viewCount: Number.isFinite(viewCount) ? viewCount : 0,
   };
 }

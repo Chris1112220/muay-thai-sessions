@@ -1,19 +1,11 @@
 import type { Category, Pools } from "../videos";
-import { selectPool } from "./selectPool";
+import { selectPool, type Candidate } from "./selectPool";
 import type { ChannelConfig } from "./loadChannelConfig";
 import { CATEGORY_SEARCHES } from "./categorySearches";
 import type { PoolsStore } from "./poolsStore";
-import type { Candidate } from "./selectPool";
+import type { YouTubeClient } from "./youtubeClient";
 
 const VIDEO_ID_BATCH = 50;
-
-export interface YouTubeClient {
-  searchList(
-    query: string,
-    options: { relevanceLanguage?: string; order: "viewCount" | "relevance" },
-  ): Promise<string[]>;
-  videosList(ids: string[]): Promise<Candidate[]>;
-}
 
 export interface RefreshLogger {
   error(message: string): void;

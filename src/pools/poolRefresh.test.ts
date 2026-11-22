@@ -3,7 +3,8 @@ import type { Candidate } from "./selectPool";
 import type { Category, Pools } from "../videos";
 import { inMemoryPoolsStore } from "./inMemoryPoolsStore";
 import { CATEGORY_SEARCHES } from "./categorySearches";
-import { refreshPools, type YouTubeClient } from "./poolRefresh";
+import { refreshPools } from "./poolRefresh";
+import type { YouTubeClient } from "./youtubeClient";
 import { authorizeCron } from "./cronAuth";
 import type { ChannelConfig } from "./loadChannelConfig";
 
