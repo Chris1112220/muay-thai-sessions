@@ -1,6 +1,7 @@
 # 04: Set up Vercel, the key-value store and the YouTube API key
 
-Status: ready-for-human
+Status: done
+Closed: 2026-11-22
 Blocked by: 01, 03
 Spec: `../spec.md`, "Stack", "Pools" (quota, storage); ADR 0004
 
@@ -10,7 +11,7 @@ The account steps an agent can't do: link the repo to Vercel, add a free key-val
 
 ## Acceptance criteria
 
-- [ ] A Vercel project on the Hobby plan is linked to the `muay-thai-sessions` GitHub repo, and the app shell from ticket 03 deploys.
+- [x] A Vercel project on the Hobby plan is linked to the `muay-thai-sessions` GitHub repo, and the app shell from ticket 03 deploys.
 - [x] The project uses `luckymuaythai.vercel.app`, or the spec is updated with the address actually used.
 - [x] A free key-value store (such as Upstash Redis through the Vercel Marketplace) is connected, and its environment variables are set in Vercel.
 - [x] A YouTube Data API key exists in a Google Cloud project, is restricted to the YouTube Data API, and is set as a Vercel environment variable.
@@ -33,3 +34,5 @@ The store variables were added by the Upstash Marketplace integration and are no
 ## Comments
 
 **2026-11-22:** Checked in Vercel: project `luckymuaythai` is linked to `Chris1112220/muay-thai-sessions`, the domain `luckymuaythai.vercel.app` is verified, and the variables above exist. The only production deployment is `main` at `845e9b4`, which predates the app shell (ticket 03 is on `verify-facts`). The first box gets ticked once that branch is merged to `main` and the deploy succeeds. Plan and key restriction were taken on the maintainer's word.
+
+**2026-11-22:** PR #3 merged as `7e96745`. After switching the Vercel Framework Preset from none to Next.js, production deployed: `luckymuaythai.vercel.app` serves the session page, and `POST /api/session` returns `{"videos":[],"underTarget":true}`, which confirms the Upstash connection. Pools stay empty until ticket 06.
