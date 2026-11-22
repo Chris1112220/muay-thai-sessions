@@ -11,79 +11,7 @@ import {
   upNextVideos,
   watchedCounterLabel,
 } from "../src/session/sessionPlayer";
-
-const YOUTUBE_IFRAME_API = "https://www.youtube.com/iframe_api";
-
-type YouTubePlayer = {
-  loadVideoById(videoId: string): void;
-  getCurrentTime(): number;
-  destroy(): void;
-};
-
-type YouTubePlayerConstructor = new (
-  elementId: string,
-  options: {
-    height: string;
-    width: string;
-    videoId: string;
-    playerVars: { enablejsapi: number; rel: number };
-    events: {
-      onStateChange: (event: { data: number }) => void;
-      onError: () => void;
-    };
-  },
-) => YouTubePlayer;
-
-type YouTubeNamespace = {
-  Player: YouTubePlayerConstructor;
-  PlayerState: { ENDED: number };
-};
-
-declare global {
-  interface Window {
-    YT?: YouTubeNamespace;
-    onYouTubeIframeAPIReady?: () => void;
-  }
-}
-
-let youtubeApiPromise: Promise<YouTubeNamespace> | null = null;
-
-function loadYoutubeApi(): Promise<YouTubeNamespace> {
-  if (youtubeApiPromise) {
-    return youtubeApiPromise;
-  }
-
-  youtubeApiPromise = new Promise((resolve) => {
-    if (window.YT?.Player) {
-      resolve(window.YT);
-      return;
-    }
-
-    const previousReady = window.onYouTubeIframeAPIReady;
-    window.onYouTubeIframeAPIReady = () => {
-      previousReady?.();
-      if (window.YT) {
-        resolve(window.YT);
-      }
-    };
-
-    const existing = document.querySelector<HTMLScriptElement>(
-      `script[src="${YOUTUBE_IFRAME_API}"]`,
-    );
-    if (!existing) {
-      const script = document.createElement("script");
-      script.src = YOUTUBE_IFRAME_API;
-      script.async = true;
-      document.head.appendChild(script);
-    }
-  });
-
-  return youtubeApiPromise;
-}
-
-function advanceIndex(currentIndex: number, videoCount: number): number {
-  return Math.min(currentIndex + 1, videoCount);
-}
+import { loadYoutubeApi, type YouTubePlayer } from "./youtubeIframeApi";
 
 interface SessionPlayerProps {
   videos: SessionApiVideo[];
@@ -93,7 +21,6 @@ export function SessionPlayer({ videos }: SessionPlayerProps) {
   const mountId = useId().replace(/:/g, "");
   const playerElementId = `session-player-${mountId}`;
   const playerRef = useRef<YouTubePlayer | null>(null);
-  const indexRef = useRef(0);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentTimeSeconds, setCurrentTimeSeconds] = useState(0);
@@ -103,13 +30,10 @@ export function SessionPlayer({ videos }: SessionPlayerProps) {
   const finished = currentIndex >= videos.length;
   const currentVideo = finished ? null : videos[currentIndex];
   const remaining = upNextVideos(videos, currentIndex);
+  const videoIds = videos.map((video) => video.id);
 
   const goToNext = useCallback(() => {
-    setCurrentIndex((index) => {
-      const next = advanceIndex(index, videos.length);
-      indexRef.current = next;
-      return next;
-    });
+    setCurrentIndex((index) => Math.min(index + 1, videos.length));
     setCurrentTimeSeconds(0);
   }, [videos.length]);
 
@@ -125,7 +49,6 @@ export function SessionPlayer({ videos }: SessionPlayerProps) {
   }, [goToNext]);
 
   useEffect(() => {
-    indexRef.current = 0;
     setCurrentIndex(0);
     setCurrentTimeSeconds(0);
     setSkippedSeconds(0);
@@ -147,15 +70,15 @@ export function SessionPlayer({ videos }: SessionPlayerProps) {
       playerRef.current?.destroy();
       playerRef.current = null;
 
-      const first = videos[0];
-      if (!first) {
+      const firstVideo = videos[0];
+      if (!firstVideo) {
         return;
       }
 
       const player = new YT.Player(playerElementId, {
         height: "100%",
         width: "100%",
-        videoId: first.id,
+        videoId: firstVideo.id,
         playerVars: {
           enablejsapi: 1,
           rel: 0,
@@ -236,7 +159,7 @@ export function SessionPlayer({ videos }: SessionPlayerProps) {
           Skip
         </button>
         <a
-          href={buildWatchOnYoutubeUrl(videos.map((video) => video.id))}
+          href={buildWatchOnYoutubeUrl(videoIds)}
           target="_blank"
           rel="noopener noreferrer"
         >
