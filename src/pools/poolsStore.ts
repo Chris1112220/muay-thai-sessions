@@ -5,4 +5,5 @@ export const POOLS_STORE_KEY = "pools";
 
 export interface PoolsStore {
   getPools(): Promise<Pools>;
+  setPools(pools: Pools): Promise<void>;
 }

@@ -12,6 +12,9 @@ export function upstashPoolsStore(redis: Redis): PoolsStore {
       }
       return pools;
     },
+    setPools: async (pools) => {
+      await redis.set(POOLS_STORE_KEY, pools);
+    },
   };
 }
 
