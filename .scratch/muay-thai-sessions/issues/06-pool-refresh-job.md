@@ -17,3 +17,4 @@ A Vercel scheduled job that runs once a day, rebuilds each category's pool from 
 - [ ] It uses about 9 `search.list` calls a day in total.
 - [ ] If YouTube fails for a category, that category's old pool is left in place and the error is logged.
 - [ ] The YouTube calls and the store sit behind small interfaces, so the job is tested with fakes and no network.
+- [ ] The refresh endpoint rejects any request whose `Authorization` header is not `Bearer <CRON_SECRET>`, which is the header Vercel Cron Jobs send. Without this, anyone who finds the URL can spend the day's search quota. The maintainer sets `CRON_SECRET` in Vercel.
