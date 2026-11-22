@@ -8,8 +8,8 @@ import {
   completedWatchSeconds,
   nowPlayingLabel,
   sessionTotalSeconds,
-  upNextVideos,
   upNextItemLabel,
+  upNextVideos,
   watchedCounterLabel,
 } from "../src/session/sessionPlayer";
 import { loadYoutubeApi, type YouTubePlayer } from "./youtubeIframeApi";
@@ -169,9 +169,7 @@ export function SessionPlayer({ videos }: SessionPlayerProps) {
       </div>
 
       {currentVideo ? (
-        <p className="session-player-now-playing">
-          Now playing: {nowPlayingLabel(currentVideo)}
-        </p>
+        <p className="session-player-now-playing">{nowPlayingLabel(currentVideo)}</p>
       ) : null}
 
       <h3 className="session-player-up-next-heading">Up next</h3>

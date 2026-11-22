@@ -6,8 +6,8 @@ import {
   formatDurationClock,
   nowPlayingLabel,
   sessionTotalSeconds,
-  upNextVideos,
   upNextItemLabel,
+  upNextVideos,
   watchedCounterLabel,
 } from "./sessionPlayer";
 
@@ -78,7 +78,7 @@ describe("upNextVideos", () => {
 describe("nowPlayingLabel", () => {
   it("includes title, duration, and channel name", () => {
     expect(nowPlayingLabel(video("a", 750, "Roundwork drills"))).toBe(
-      "Roundwork drills (12:30) — Channel",
+      "Now playing: Roundwork drills (12:30) — Channel",
     );
   });
 });

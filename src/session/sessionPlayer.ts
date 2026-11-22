@@ -36,11 +36,13 @@ export function upNextVideos<T extends SessionApiVideo>(
 }
 
 export function nowPlayingLabel(video: SessionApiVideo): string {
-  return `${video.title} (${formatDurationClock(video.length)}) — ${video.channel}`;
+  const duration = formatDurationClock(video.length);
+  return `Now playing: ${video.title} (${duration}) — ${video.channel}`;
 }
 
 export function upNextItemLabel(video: SessionApiVideo): string {
-  return `${video.title} — ${video.channel} (${formatDurationClock(video.length)})`;
+  const duration = formatDurationClock(video.length);
+  return `${video.title} — ${video.channel} (${duration})`;
 }
 
 export function buildWatchOnYoutubeUrl(videoIds: string[]): string {

@@ -15,7 +15,8 @@ describe("YouTube API compliance links", () => {
   });
 
   it("states that using the site means agreeing to the YouTube Terms of Service", () => {
-    expect(YOUTUBE_TERMS_AGREEMENT_STATEMENT).toMatch(/YouTube Terms of Service/i);
-    expect(YOUTUBE_TERMS_AGREEMENT_STATEMENT).toMatch(/agree/i);
+    expect(YOUTUBE_TERMS_AGREEMENT_STATEMENT).toBe(
+      "By using this site, you agree to the YouTube Terms of Service.",
+    );
   });
 });

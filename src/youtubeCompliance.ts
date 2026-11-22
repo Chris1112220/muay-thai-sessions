@@ -1,4 +1,4 @@
-/** Official URLs — do not modify (YouTube API Services compliance). */
+/** Official URLs and wording — do not modify (YouTube API Services compliance). */
 export const YOUTUBE_TERMS_OF_SERVICE_URL = "https://www.youtube.com/t/terms";
 
 export const GOOGLE_PRIVACY_POLICY_URL = "https://policies.google.com/privacy";
