@@ -11,10 +11,10 @@ The links, wording and attribution the YouTube API Services terms require.
 
 ## Acceptance criteria
 
-- [ ] Links to the YouTube Terms of Service and the Google Privacy Policy on every page.
-- [ ] A statement that using the site means agreeing to the YouTube Terms of Service.
-- [ ] Each video's channel name is shown alongside the embedded player and in the up next list.
-- [ ] Links that YouTube provides aren't modified.
+- [x] Links to the YouTube Terms of Service and the Google Privacy Policy on every page.
+- [x] A statement that using the site means agreeing to the YouTube Terms of Service.
+- [x] Each video's channel name is shown alongside the embedded player and in the up next list.
+- [x] Links that YouTube provides aren't modified.
 
 ## Comments
 
