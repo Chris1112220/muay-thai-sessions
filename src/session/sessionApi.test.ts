@@ -100,6 +100,7 @@ describe("buildSessionFromStore", () => {
         reads += 1;
         return store.getPools();
       },
+      setPools: async (pools) => store.setPools(pools),
     };
 
     await buildSessionFromStore(
