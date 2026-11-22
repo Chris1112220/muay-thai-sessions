@@ -4,9 +4,17 @@ Review the code changes on branch `{{BRANCH}}` and improve code clarity, consist
 
 # CONTEXT
 
-## Branch diff
+## Files changed
 
-!`git diff {{TARGET_BRANCH}}...{{BRANCH}} -- . ':(exclude)package-lock.json'`
+!`git diff --stat {{TARGET_BRANCH}}...{{BRANCH}} -- . ':(exclude)package-lock.json'`
+
+Read the full diff yourself before reviewing:
+
+```
+git diff {{TARGET_BRANCH}}...{{BRANCH}} -- . ':(exclude)package-lock.json'
+```
+
+The diff is not pasted here because Sandcastle passes this prompt as a single command-line argument, and on a Windows host a large diff exceeds the length limit and the reviewer fails to start.
 
 ## Commits on this branch
 
