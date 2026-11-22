@@ -217,20 +217,30 @@ h1 {
   gap: 0.35rem;
 }
 
-.session-player-up-next li {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.session-player-up-next-length {
-  font-size: 0.875rem;
-  color: #555;
-  font-variant-numeric: tabular-nums;
-}
-
 .session-player-done {
   margin: 0;
   text-align: center;
   color: #333;
+}
+
+.youtube-compliance {
+  width: 100%;
+  max-width: 28rem;
+  margin: 2rem auto 1.5rem;
+  padding: 0 1.25rem;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: #555;
+}
+
+.youtube-compliance-agreement {
+  margin: 0 0 0.35rem;
+}
+
+.youtube-compliance-links {
+  margin: 0;
+}
+
+.youtube-compliance-links a {
+  color: #1a5c2e;
 }

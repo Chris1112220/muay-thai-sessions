@@ -35,6 +35,16 @@ export function upNextVideos<T extends SessionApiVideo>(
   return videos.slice(currentIndex + 1);
 }
 
+export function nowPlayingLabel(video: SessionApiVideo): string {
+  const duration = formatDurationClock(video.length);
+  return `Now playing: ${video.title} (${duration}) — ${video.channel}`;
+}
+
+export function upNextItemLabel(video: SessionApiVideo): string {
+  const duration = formatDurationClock(video.length);
+  return `${video.title} — ${video.channel} (${duration})`;
+}
+
 export function buildWatchOnYoutubeUrl(videoIds: string[]): string {
   return `https://www.youtube.com/watch_videos?video_ids=${videoIds.join(",")}`;
 }
