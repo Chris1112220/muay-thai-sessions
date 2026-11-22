@@ -133,7 +133,103 @@ h1 {
   color: #5c3d00;
 }
 
-.session-summary {
+.session-player {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e8e8e8;
+}
+
+.session-player h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.session-player-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 0.375rem;
+  background: #000;
+}
+
+.session-player-frame > div {
+  width: 100%;
+  height: 100%;
+}
+
+.session-player-counter {
+  margin: 0;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.session-player-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.session-player-actions button {
+  padding: 0.55rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  color: #1a1a1a;
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+.session-player-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.session-player-actions a {
+  text-align: center;
+  font-size: 0.9375rem;
+}
+
+.session-player-now-playing {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.session-player-up-next-heading {
+  margin: 0.25rem 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.session-player-up-next {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.session-player-up-next li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.session-player-up-next-length {
+  font-size: 0.875rem;
+  color: #555;
+  font-variant-numeric: tabular-nums;
+}
+
+.session-player-done {
   margin: 0;
   text-align: center;
   color: #333;

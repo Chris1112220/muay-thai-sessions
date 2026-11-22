@@ -13,6 +13,7 @@ import {
   selectedCategories,
 } from "../src/session/sessionForm";
 import type { SessionApiVideo } from "../src/session/sessionApi";
+import { SessionPlayer } from "./SessionPlayer";
 
 const DEFAULT_BUDGET_MINUTES = 30;
 
@@ -139,11 +140,7 @@ export function SessionForm() {
         </p>
       ) : null}
 
-      {videos && videos.length > 0 ? (
-        <p className="session-summary" aria-live="polite">
-          Session ready: {videos.length} video{videos.length === 1 ? "" : "s"} lined up.
-        </p>
-      ) : null}
+      {videos && videos.length > 0 ? <SessionPlayer videos={videos} /> : null}
     </form>
   );
 }
