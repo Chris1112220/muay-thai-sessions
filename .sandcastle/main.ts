@@ -21,6 +21,7 @@
 // Or add to package.json:
 //   "scripts": { "sandcastle": "npx tsx .sandcastle/main.ts" }
 
+import { execFileSync } from "node:child_process";
 import * as sandcastle from "@ai-hero/sandcastle";
 import { docker } from "@ai-hero/sandcastle/sandboxes/docker";
 
@@ -60,6 +61,8 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
     sandbox: docker(),
     hooks,
     copyToWorktree,
+    // node_modules is ~420 MB on Windows; the 60s default is too short.
+    timeouts: { copyToWorktreeMs: 600_000 },
   });
 
   try {
@@ -113,6 +116,18 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
     console.log("\nReview complete.");
   } finally {
     await sandbox.close();
+  }
+
+  // Bring the reviewed work onto the host branch. Each iteration branches
+  // from the host's HEAD, so without this every iteration starts from the
+  // same commit, still sees the same issue open, and implements it again.
+  // --ff-only refuses anything but a clean fast-forward; if it fails, stop
+  // rather than repeat work.
+  try {
+    execFileSync("git", ["merge", "--ff-only", branch], { stdio: "inherit" });
+  } catch {
+    console.error(`\nCould not fast-forward onto ${branch}. Stopping; merge it by hand.`);
+    break;
   }
 }
 

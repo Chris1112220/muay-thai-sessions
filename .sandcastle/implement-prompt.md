@@ -37,7 +37,7 @@ Pick the highest-priority open issue that is not blocked by another open issue.
    - List key decisions made
    - List files changed
    - Note any blockers for the next iteration
-6. **Close** — close the issue with `bash .sandcastle/issues.sh close <ID> <summary of what was done>`. To inspect a ticket first: `bash .sandcastle/issues.sh view <ID>`.
+6. **Close** — close the issue with `bash .sandcastle/issues.sh close <ID> <summary of what was done>`. To inspect a ticket first: `bash .sandcastle/issues.sh view <ID>`. Then commit the closed ticket: `git add .scratch && git commit -m "RALPH: Close issue <ID>"`. An uncommitted close is lost when the sandbox shuts down, and the issue gets picked up again.
 
 ## Rules
 
