@@ -48,3 +48,93 @@ h1 {
   text-align: center;
   color: #444;
 }
+
+.session-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.5rem;
+  background: #fff;
+}
+
+.session-form h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.session-fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.session-fieldset legend {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.session-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+  cursor: pointer;
+}
+
+.session-budget {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.session-budget-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.session-budget input[type="number"] {
+  width: 5rem;
+  padding: 0.35rem 0.5rem;
+  font: inherit;
+}
+
+.session-budget input[type="range"] {
+  width: 100%;
+}
+
+.session-form button[type="submit"] {
+  padding: 0.65rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: #1a5c2e;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+.session-form button[type="submit"]:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.session-message {
+  margin: 0;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  background: #fff4e5;
+  color: #5c3d00;
+}
+
+.session-summary {
+  margin: 0;
+  text-align: center;
+  color: #333;
+}
