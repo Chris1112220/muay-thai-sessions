@@ -1,6 +1,7 @@
 # 08: Session form
 
-Status: ready-for-agent
+Status: done
+Closed: 2026-11-22
 Blocked by: 07
 Spec: `../spec.md`, "Viewer flow", "Thin category"
 
@@ -16,3 +17,8 @@ The form where the viewer picks what to watch, which asks the session API for a 
 - [ ] With no category ticked, the form doesn't send a request and asks the viewer to pick at least one category.
 - [ ] When the session comes back under the 85% target, the viewer is told.
 - [ ] Errors from the API are shown to the viewer.
+
+## Comments
+
+
+**2026-11-22:** Session form with category checkboxes, 1–120 min budget input/slider, Include Shorts, client validation, API errors, and under-target notice; Vitest coverage for sessionForm helpers.

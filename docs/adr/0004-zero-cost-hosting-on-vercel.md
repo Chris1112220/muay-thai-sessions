@@ -1,6 +1,6 @@
 # $0 budget: Next.js on Vercel's free plan, with pools in a key-value store
 
-The project is a public portfolio piece with a hard budget of $0. It runs as one TypeScript Next.js app on Vercel's free Hobby plan at a `*.vercel.app` address, with no custom domain. A daily scheduled job refreshes the pools, which are stored in a free key-value store such as Upstash Redis through the Vercel Marketplace.
+The project is a public portfolio piece with a hard budget of $0. It runs as one TypeScript Next.js app on Vercel's free Hobby plan at a `*.vercel.app` address, with no custom domain. A daily scheduled job refreshes the pools, which are stored in a free Upstash Redis database through the Vercel Marketplace (Vercel KV no longer exists).
 
 ## Considered Options
 
@@ -8,4 +8,4 @@ The project is a public portfolio piece with a hard budget of $0. It runs as one
 
 ## Consequences
 
-The free plan limits scheduled jobs to roughly once a day, which matches the daily pool refresh; this should be checked against the current plan limits. Anything that adds cost, such as a domain for v2 OAuth verification, needs an explicit decision to change the $0 budget.
+The daily refresh uses Vercel Cron Jobs. On the Hobby plan they run exactly once a day, firing anywhere within the scheduled hour, which matches the daily pool refresh. Vercel marks Cron Jobs as legacy and is replacing them with Schedules, still in beta; v1 stays on Cron Jobs until Schedules is stable. Upstash's free tier allows 500K commands a month, so each session request reads all pools with a single command. Limits checked on 2026-11-21 (`.scratch/muay-thai-sessions/research/01-verify-facts.md`). Anything that adds cost, such as a domain for v2 OAuth verification, needs an explicit decision to change the $0 budget.
