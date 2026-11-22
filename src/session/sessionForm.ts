@@ -1,10 +1,15 @@
 import type { Category } from "../videos";
-import type { SessionApiBody, SessionApiSuccess, SessionApiVideo } from "./sessionApi";
+import {
+  CATEGORIES,
+  type SessionApiBody,
+  type SessionApiSuccess,
+  type SessionApiVideo,
+} from "./sessionApi";
 
 export const MIN_BUDGET_MINUTES = 1;
 export const MAX_BUDGET_MINUTES = 120;
 
-export const CATEGORY_OPTIONS: readonly Category[] = ["Training", "Fights", "History"];
+export const CATEGORY_OPTIONS = CATEGORIES;
 
 export const UNDER_TARGET_MESSAGE =
   "This category could not fill its share of the time budget. Your session is shorter than the usual 85% target.";
@@ -40,6 +45,27 @@ export type SessionFormFailure = {
 
 export type SessionFormResult = SessionFormSuccess | SessionFormFailure;
 
+const DEFAULT_SESSION_ERROR = "Could not build a session.";
+
+function readApiErrorMessage(data: unknown): string {
+  if (typeof data === "object" && data !== null && "error" in data) {
+    const message = (data as { error: unknown }).error;
+    if (typeof message === "string") {
+      return message;
+    }
+  }
+  return DEFAULT_SESSION_ERROR;
+}
+
+function isSessionApiSuccess(data: unknown): data is SessionApiSuccess {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    "videos" in data &&
+    Array.isArray((data as SessionApiSuccess).videos)
+  );
+}
+
 type FetchLike = (
   input: RequestInfo | URL,
   init?: RequestInit,
@@ -55,18 +81,14 @@ export async function requestSession(
     body: JSON.stringify(body),
   });
 
-  const data = (await response.json()) as SessionApiSuccess | { error?: string };
+  const data: unknown = await response.json();
 
   if (!response.ok) {
-    const message =
-      typeof data === "object" && data !== null && "error" in data && typeof data.error === "string"
-        ? data.error
-        : "Could not build a session.";
-    return { ok: false, error: message };
+    return { ok: false, error: readApiErrorMessage(data) };
   }
 
-  if (!("videos" in data) || !Array.isArray(data.videos)) {
-    return { ok: false, error: "Could not build a session." };
+  if (!isSessionApiSuccess(data)) {
+    return { ok: false, error: DEFAULT_SESSION_ERROR };
   }
 
   return {

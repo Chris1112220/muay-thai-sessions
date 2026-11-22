@@ -17,7 +17,13 @@ import type { SessionApiVideo } from "../src/session/sessionApi";
 const DEFAULT_BUDGET_MINUTES = 30;
 
 function emptyCategories(): Record<Category, boolean> {
-  return { Training: false, Fights: false, History: false };
+  return CATEGORY_OPTIONS.reduce(
+    (state, category) => {
+      state[category] = false;
+      return state;
+    },
+    {} as Record<Category, boolean>,
+  );
 }
 
 export function SessionForm() {

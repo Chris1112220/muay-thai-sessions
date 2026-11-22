@@ -3,7 +3,7 @@ import type { Random, SessionRequest } from "./buildSession";
 import type { Category, Pools, Video } from "../videos";
 import type { PoolsStore } from "../pools/poolsStore";
 
-const CATEGORIES: readonly Category[] = ["Training", "Fights", "History"];
+export const CATEGORIES: readonly Category[] = ["Training", "Fights", "History"];
 
 export interface SessionApiBody {
   categories: unknown;
