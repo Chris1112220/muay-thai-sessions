@@ -1,4 +1,5 @@
 import type { Category, Video } from "../videos";
+import type { ChannelConfig } from "./loadChannelConfig";
 
 /** A search result merged with its `videos.list` details. */
 export interface Candidate {
@@ -11,12 +12,6 @@ export interface Candidate {
   ageRestricted: boolean;
   liveStatus: "none" | "live" | "upcoming";
   viewCount: number;
-}
-
-/** Blocked and trusted channels from the repo's config file, by channel ID. */
-export interface ChannelConfig {
-  blocked: string[];
-  trusted: string[];
 }
 
 const MIN_VIEWS = 10_000;
