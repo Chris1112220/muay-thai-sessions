@@ -1,6 +1,7 @@
 # 06: Daily pool refresh job
 
-Status: ready-for-agent
+Status: done
+Closed: 2026-11-22
 Blocked by: 01, 04, 05
 Spec: `../spec.md`, "Pools"; ADR 0001, ADR 0004
 
@@ -18,3 +19,8 @@ A Vercel scheduled job that runs once a day, rebuilds each category's pool from 
 - [ ] If YouTube fails for a category, that category's old pool is left in place and the error is logged.
 - [ ] The YouTube calls and the store sit behind small interfaces, so the job is tested with fakes and no network.
 - [ ] The refresh endpoint rejects any request whose `Authorization` header is not `Bearer <CRON_SECRET>`, which is the header Vercel Cron Jobs send. Without this, anyone who finds the URL can spend the day's search quota. The maintainer sets `CRON_SECRET` in Vercel.
+
+## Comments
+
+
+**2026-11-22:** Daily pool refresh: cron route with CRON_SECRET, refreshPools with fakes-tested YouTube/store interfaces, 9 searches, batched videos.list, Upstash setPools, vercel.json cron.
